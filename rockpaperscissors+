@@ -1,0 +1,93 @@
+import random
+
+def askname_sayhello():
+    name = input("Enter your name: ")
+    print(f"Hello, {name}")
+    return name
+    
+def read_ratings():
+    r_file = open('rating.txt')
+    score_lines = r_file.readlines()
+    return score_lines
+    
+def ini_p_score(name,score_lines):
+    p_score = 0
+    for lines in score_lines:
+        split_lines = lines.split()
+        if name == split_lines[0]:
+            p_score = int(split_lines[1])
+    return p_score
+
+def take_in_options():
+    options = input()
+    is_default = False
+    if options == '':
+        is_default = True
+    return options, is_default
+    
+def its_default(is_default):
+    if is_default is True:
+        options = ['rock', 'paper', 'scissors']
+        win_comp = {'rock': ['scissors'], 'scissors': ['paper'], 'paper': ['rock']}
+        return win_comp, options
+    else:
+        return 31
+
+def decide_win_comp(options, is_default):
+    if is_default is False:
+        win_comp = {}
+        split_options = options.split(',')
+        n_options = len(split_options)
+        for i,option in enumerate(split_options):
+            n_wins = n_options//2
+            others = split_options[i + 1:] + split_options[: i]
+            wins_over = others[n_wins:]
+            win_comp[option] = wins_over
+        return win_comp, split_options
+    else:
+        return 31
+
+def rps_game():
+    p_name = askname_sayhello()
+    score_lines = read_ratings()
+    p_score = ini_p_score(p_name, score_lines)
+    options, is_default = take_in_options()
+    
+    if its_default(is_default) == 31:
+        win_comp, split_options = decide_win_comp(options, is_default)
+    else:
+        win_comp, split_options = its_default(is_default)
+        
+    #LETS GOO!!
+    print("Okay, let's start")
+    
+    while True:
+        p_choice = input()
+        c_choice = random.choice(split_options)
+        
+        Lose = f'Sorry, but the computer chose {c_choice}'
+        Draw = f'There is a draw ({c_choice})'
+        Win = f'Well done. The computer chose {c_choice} and failed'
+        
+        if p_choice in split_options:
+            if p_choice == c_choice:
+                p_score += 50
+                print(Draw)
+                
+            elif c_choice in win_comp[p_choice]:
+                p_score += 100
+                print(Win)
+                
+            else:
+                print(Lose)
+        
+        elif p_choice == '!rating':
+            print(p_score)
+            
+        elif p_choice == '!exit':
+            print('Bye!')
+            break
+        
+        else:
+            print('Invalid input')
+    
